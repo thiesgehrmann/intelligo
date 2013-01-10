@@ -107,10 +107,13 @@ class intelligo:
       Return the set of lowest common ancestors (ancestors with the highest depth)
     """
 
-    k = (term1, term2);
+    k  = (term1, term2);
+    ki = (term2, term1);
 
     if k in self.lcaset_cache:
       return self.lcaset_cache[k];
+    elif ki in self.lcaset_cache:
+      return self.lcaset_cache[ki];
     #fi
 
     canc = self.commonanc(term1, term2);
@@ -141,7 +144,7 @@ class intelligo:
         returns -1 if the two are not connected at all.
     """
 
-    k = (term, anc);
+    k  = (term, anc);
     if k in self.mdist_cache:
       return self.mdist_cache[k];
     #fi
@@ -222,10 +225,13 @@ class intelligo:
       Calculate the dot product between two terms
     """
 
-    k = (term1, term2);
+    k  = (term1, term2);
+    ki = (term2, term1);
 
     if k in self.dot_cache:
       return self.dot_cache[k];
+    elif ki in self.dot_cache:
+      return self.dot_cache[ki];
     #fi
 
     lca   = list(self.lcaset(term1, term2))[0];
@@ -270,7 +276,15 @@ class intelligo:
           [ (goterm1, goterm1EC), ... (goterm2, gotermEC) ]
     """
 
-    return self.sim_base(gene1, gene2, IAF) / ( sqrt(self.sim_base(gene1, gene1, IAF)) * sqrt(self.sim_base(gene2, gene2, IAF)));
+    a = self.sim_base(gene1, gene2, IAF);
+    b = sqrt(self.sim_base(gene1, gene1, IAF));
+    c = sqrt(self.sim_base(gene2, gene2, IAF));
+
+    if (a == 0) or (b == 0):
+      return 0;
+    #fi
+
+    return a / (b + c);
 
   #edef
 

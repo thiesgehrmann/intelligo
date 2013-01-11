@@ -9,10 +9,10 @@ class intelligo:
 
   #############################################################################
 
-  weights_list1 = { 'TAS':1.0, 'NAS':1.0, 'EXP':1.0, 'IDA':1.0, 'IPI':1.0, 'IMP':1.0, 'IGI':1.0, 'IEP':1.0, 'ISS':1.0, 'RCA':1.0, 'ISA':1.0, 'ISO':1.0, 'ISM':1.0, 'IGC':1.0, 'IC':1.0, 'ND':1.0, 'IEA':1.0 }
-  weights_list2 = { 'TAS':1.0, 'NAS':0.5, 'EXP':0.8, 'IDA':0.8, 'IPI':0.8, 'IMP':0.8, 'IGI':0.8, 'IEP':0.6, 'ISS':0.6, 'RCA':0.6, 'ISA':0.6, 'ISO':0.6, 'ISM':0.6, 'IGC':0.6, 'IC':0.5, 'ND':0.0, 'IEA':0.4 }
-  weights_list3 = { 'TAS':1.0, 'NAS':0.5, 'EXP':0.8, 'IDA':0.8, 'IPI':0.8, 'IMP':0.8, 'IGI':0.8, 'IEP':0.6, 'ISS':0.6, 'RCA':0.6, 'ISA':0.6, 'ISO':0.6, 'ISM':0.6, 'IGC':0.6, 'IC':0.5, 'ND':0.0, 'IEA':0.0 }
-  weights_list4 = { 'TAS':0.0, 'NAS':0.0, 'EXP':0.0, 'IDA':0.0, 'IPI':0.0, 'IMP':0.0, 'IGI':0.0, 'IEP':0.0, 'ISS':0.0, 'RCA':0.0, 'ISA':0.0, 'ISO':0.0, 'ISM':0.0, 'IGC':0.0, 'IC':0.0, 'ND':0.0, 'IEA':1.0 }
+  weights_list1 = { 'TAS':1.0, 'NAS':1.0, 'EXP':1.0, 'IDA':1.0, 'IPI':1.0, 'IMP':1.0, 'IGI':1.0, 'IEP':1.0, 'ISS':1.0, 'RCA':1.0, 'ISA':1.0, 'ISO':1.0, 'ISM':1.0, 'IGC':1.0, 'IC':1.0, 'ND':1.0, 'IEA':1.0,   'IBA':0.4, 'IRD': 0.4, 'IKR':0.4 }
+  weights_list2 = { 'TAS':1.0, 'NAS':0.5, 'EXP':0.8, 'IDA':0.8, 'IPI':0.8, 'IMP':0.8, 'IGI':0.8, 'IEP':0.6, 'ISS':0.6, 'RCA':0.6, 'ISA':0.6, 'ISO':0.6, 'ISM':0.6, 'IGC':0.6, 'IC':0.5, 'ND':0.0, 'IEA':0.4,   'IBA':0.4, 'IRD': 0.4, 'IKR':0.4 }
+  weights_list3 = { 'TAS':1.0, 'NAS':0.5, 'EXP':0.8, 'IDA':0.8, 'IPI':0.8, 'IMP':0.8, 'IGI':0.8, 'IEP':0.6, 'ISS':0.6, 'RCA':0.6, 'ISA':0.6, 'ISO':0.6, 'ISM':0.6, 'IGC':0.6, 'IC':0.5, 'ND':0.0, 'IEA':0.0,   'IBA':0.4, 'IRD': 0.4, 'IKR':0.4 }
+  weights_list4 = { 'TAS':0.0, 'NAS':0.0, 'EXP':0.0, 'IDA':0.0, 'IPI':0.0, 'IMP':0.0, 'IGI':0.0, 'IEP':0.0, 'ISS':0.0, 'RCA':0.0, 'ISA':0.0, 'ISO':0.0, 'ISM':0.0, 'IGC':0.0, 'IC':0.0, 'ND':0.0, 'IEA':1.0,   'IBA':0.4, 'IRD': 0.4, 'IKR':0.4 }
 
   depth_cache  = {};
   anc_cache    = {};
@@ -24,7 +24,7 @@ class intelligo:
 
   #############################################################################
 
-  def __init__(self, fin, weights={ 'TAS':1.0, 'NAS':1.0, 'EXP':1.0, 'IDA':1.0, 'IPI':1.0, 'IMP':1.0, 'IGI':1.0, 'IEP':1.0, 'ISS':1.0, 'RCA':1.0, 'ISA':1.0, 'ISO':1.0, 'ISM':1.0, 'IGC':1.0, 'IC':1.0, 'ND':1.0, 'IEA':1.0 }):
+  def __init__(self, fin, weights={ 'TAS':1.0, 'NAS':1.0, 'EXP':1.0, 'IDA':1.0, 'IPI':1.0, 'IMP':1.0, 'IGI':1.0, 'IEP':1.0, 'ISS':1.0, 'RCA':1.0, 'ISA':1.0, 'ISO':1.0, 'ISM':1.0, 'IGC':1.0, 'IC':1.0, 'ND':1.0, 'IEA':1.0, 'IBA':0.8, 'IRD': 0.4, 'IKR':0.4 }):
     self.obo = obo_parser.GODag(fin);
     self.weights = weights;
   #edef
@@ -238,7 +238,13 @@ class intelligo:
     lcadp = float(self.depth(lca));
     mspl  = float(self.minspl(term1, term2));
 
-    dot = (2.0 * lcadp) / ( mspl + (2.0 * lcadp) );
+    denom = mspl + (2.0 * lcadp);
+    if denom == 0:
+      dot = 0;
+    else:
+      dot = (2.0 * lcadp) / denom;
+    #fi
+
     self.dot_cache[k] = dot;
     return dot;
 
@@ -246,7 +252,7 @@ class intelligo:
 
   #############################################################################
 
-  def sim_base(self, gene1, gene2, IAF):
+  def cos_base(self, gene1, gene2, IAF):
 
     gh = 0;
 
@@ -276,15 +282,15 @@ class intelligo:
           [ (goterm1, goterm1EC), ... (goterm2, gotermEC) ]
     """
 
-    a = self.sim_base(gene1, gene2, IAF);
-    b = sqrt(self.sim_base(gene1, gene1, IAF));
-    c = sqrt(self.sim_base(gene2, gene2, IAF));
+    a = self.cos_base(gene1, gene2, IAF);
+    b = sqrt(self.cos_base(gene1, gene1, IAF));
+    c = sqrt(self.cos_base(gene2, gene2, IAF));
 
     if (a == 0) or (b == 0):
       return 0;
     #fi
 
-    return a / (b + c);
+    return a / (b * c);
 
   #edef
 
